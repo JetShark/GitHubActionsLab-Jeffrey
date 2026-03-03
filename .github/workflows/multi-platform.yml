@@ -1,0 +1,64 @@
+name: Multi-Platform Workflow
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+# This workflow is made up of three jobs that run in parallel, one for each operating system, each showing some differences in their command line interfaces and file systems.
+jobs:
+  ubuntu-job:
+    name: Ubuntu Job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Print OS Information
+        run: |
+          uname -a
+          df -h
+
+      - name: Create and Display File
+        run: |
+          printf "Hello from Ubuntu\nCreated at: $(date)" > ubuntu.txt
+          stat ubuntu.txt
+          cat ubuntu.txt
+  
+  windows-job:
+    name: Windows Job
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Print OS Information
+        run: |
+          systeminfo
+          Get-ComputerInfo | Select-Object OsName, OsVersion, OsArchitecture
+
+      - name: Create and Display File
+        run: |
+          New-Item -Path . -Name "windows.txt" -ItemType "file" -Value "Hello from Windows`nCreated at: $(Get-Date)"
+          Get-Item windows.txt | Select-Object Name, Length, LastWriteTime
+          Get-Content windows.txt
+  
+  macos-job:
+    name: MacOS Job
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Print OS Information
+        run: |
+          uname -a
+          sw_vers
+
+      - name: Create and Display File
+        run: |
+          echo "Hello from MacOS" | tee macos.txt
+          ls -l macos.txt
+          cat macos.txt
